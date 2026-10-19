@@ -1,7 +1,9 @@
 ---
 roles:
   - name: geerlingguy.pip
+  # 7.5+ ставит репозиторий через deb822 и требует python3-debian, которого нет в минимальных образах
   - name: geerlingguy.docker
+    version: 7.4.7
   - name: datadog.datadog
 
 collections:
