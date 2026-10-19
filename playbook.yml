@@ -1,0 +1,46 @@
+---
+- name: Prepare servers, deploy Redmine and set up monitoring
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install pip and Docker SDK for Python
+      ansible.builtin.include_role:
+        name: geerlingguy.pip
+        apply:
+          tags: [prepare]
+      tags: [prepare]
+
+    - name: Install Docker
+      ansible.builtin.include_role:
+        name: geerlingguy.docker
+        apply:
+          tags: [prepare]
+      tags: [prepare]
+
+    - name: Render Redmine environment file
+      ansible.builtin.template:
+        src: templates/redmine.env.j2
+        dest: "{{ redmine_env_file }}"
+        mode: "0600"
+      no_log: true
+      tags: [deploy]
+
+    - name: Run Redmine container
+      community.docker.docker_container:
+        name: redmine
+        image: "{{ redmine_image }}"
+        pull: true
+        restart_policy: always
+        env_file: "{{ redmine_env_file }}"
+        published_ports:
+          - "{{ redmine_port }}:3000"
+      tags: [deploy]
+
+    - name: Install Datadog agent with HTTP check
+      ansible.builtin.include_role:
+        name: datadog.datadog
+        apply:
+          tags: [monitoring]
+      when: "'webservers' in group_names"
+      tags: [monitoring]

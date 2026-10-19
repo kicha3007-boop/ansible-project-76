@@ -2,29 +2,37 @@
 
 [![hexlet-check](https://github.com/kicha3007-boop/ansible-project-76/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/kicha3007-boop/ansible-project-76/actions)
 
-Автоматизация раскатывания контейнеризированного приложения на кластер машин в облаке
+Деплой [Redmine](https://hub.docker.com/_/redmine) в Docker на два сервера за балансировщиком Yandex Cloud с Managed PostgreSQL и мониторингом Datadog.
 
-Учебный проект Хекслета: https://ru.hexlet.io/programs/ansible
-Как это должно работать: https://asciinema.org/a/v4evn7XjCdou7Yh71IG0ljb0W
+Учебный проект Хекслета: https://ru.hexlet.io/programs/ansible-deploy
 
-## Стек
+## Инфраструктура
 
-- Инструменты
+- Два сервера Ubuntu (группа `webservers` в `inventory.ini`)
+- Application Load Balancer: HTTPS с сертификатом домена, запросы идут на порт `redmine_port` серверов
+- Кластер Managed PostgreSQL, доступный только с серверов
+- Домен делегирован на DNS облака, A-запись указывает на балансировщик
 
-## Установка
-
-<!-- Опишите установку: клонирование, зависимости, переменные окружения -->
+## Подготовка
 
 ```bash
-git clone https://github.com/kicha3007-boop/ansible-project-76.git
-cd ansible-project-76
+make install                 # роли geerlingguy.pip, geerlingguy.docker, datadog.datadog и коллекция community.docker
+echo 'пароль' > .vault_pass  # пароль от group_vars/webservers/vault.yml, в репозиторий не попадает
+make vault-edit              # пароль БД, SECRET_KEY_BASE, ключ Datadog
 ```
+
+Адреса серверов указываются в `inventory.ini`, адрес БД и прочие настройки — в `group_vars/webservers/vars.yml`.
 
 ## Использование
 
-<!-- Добавьте примеры запуска и запись asciinema — именно это смотрит работодатель -->
+```bash
+make prepare     # pip, Docker SDK и Docker на серверах
+make deploy      # запуск контейнера Redmine с .env из шаблона, без изменения настроек серверов
+make monitoring  # агент Datadog с http_check Redmine
+make lint        # ansible-lint
+```
 
----
+Порт приложения задаётся переменной `redmine_port`.
 
 <details>
 <summary>Автоматические тесты Хекслета</summary>
@@ -32,7 +40,3 @@ cd ansible-project-76
 Тесты запускаются на каждый коммит. За запуск отвечает файл `.github/workflows/hexlet-check.yml` — не удаляйте и не переименовывайте ни его, ни репозиторий.
 
 </details>
-
-## О Хекслете
-
-[Хекслет](https://ru.hexlet.io/) — школа программирования: авторские программы обучения с практикой, поддержкой наставников и реальными проектами, которые остаются в резюме. Этот репозиторий — один из таких проектов.
