@@ -4,6 +4,12 @@
   become: true
 
   tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      tags: [prepare]
+
     - name: Install pip and Docker SDK for Python
       ansible.builtin.include_role:
         name: geerlingguy.pip
