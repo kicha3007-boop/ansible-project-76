@@ -1,23 +1,6 @@
 ---
-# Подготовка: Docker SDK для модулей community.docker
-pip_install_packages:
-  - name: docker
-
 docker_users:
   - "{{ ansible_user }}"
-
-# Деплой Redmine
-redmine_image: redmine:6
-redmine_port: 80
-redmine_env_file: /etc/redmine.env
-
-# База данных: Managed PostgreSQL. Пароль — в vault.yml
-redmine_db_host: c-placeholder.rw.mdb.yandexcloud.net
-redmine_db_port: 6432
-redmine_db_name: redmine
-redmine_db_user: redmine
-redmine_db_password: "{{ vault_redmine_db_password }}"
-redmine_secret_key_base: "{{ vault_redmine_secret_key_base }}"
 
 # Мониторинг Datadog: агент проверяет HTTP-ответ Redmine на каждом сервере
 datadog_api_key: "{{ vault_datadog_api_key }}"

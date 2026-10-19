@@ -1,0 +1,18 @@
+---
+# Подготовка: Docker SDK для модулей community.docker
+pip_install_packages:
+  - name: docker
+
+# Деплой Redmine
+redmine_image: redmine:6
+redmine_port: 80
+redmine_env_file: /etc/redmine.env
+
+# База данных: Managed PostgreSQL. Секреты — в group_vars/webservers/vault.yml,
+# на хостах вне webservers их нет, поэтому подставляется пустое значение
+redmine_db_host: c-placeholder.rw.mdb.yandexcloud.net
+redmine_db_port: 6432
+redmine_db_name: redmine
+redmine_db_user: redmine
+redmine_db_password: "{{ vault_redmine_db_password | default('') }}"
+redmine_secret_key_base: "{{ vault_redmine_secret_key_base | default('') }}"

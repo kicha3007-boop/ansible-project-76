@@ -21,7 +21,7 @@ echo 'пароль' > .vault_pass  # пароль от group_vars/webservers/vau
 make vault-edit              # пароль БД, SECRET_KEY_BASE, ключ Datadog
 ```
 
-Адреса серверов указываются в `inventory.ini`, адрес БД и прочие настройки — в `group_vars/webservers/vars.yml`.
+Адреса серверов указываются в `inventory.ini`. Настройки Redmine и адрес БД — в `group_vars/all/vars.yml`, настройки Datadog — в `group_vars/webservers/vars.yml`, секреты — в зашифрованном `group_vars/webservers/vault.yml`.
 
 ## Использование
 
